@@ -65,8 +65,9 @@ class ScryfallClient(BaseClient):
         response = await self._rate_limited_request(
             "GET", "/cards/search", params={"q": full_query, "page": page}
         )
-        data = response.json()
-        return data.get("data", [])
+        data: dict[str, Any] = response.json()
+        result: list[dict[str, Any]] = data.get("data", [])
+        return result
 
     async def random_card(
         self,
@@ -81,4 +82,5 @@ class ScryfallClient(BaseClient):
 
         logger.info("Fetching random card from Scryfall")
         response = await self._rate_limited_request("GET", "/cards/random", params=params)
-        return response.json()
+        result: dict[str, Any] = response.json()
+        return result

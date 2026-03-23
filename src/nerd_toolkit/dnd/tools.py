@@ -253,21 +253,14 @@ async def recommend_build_logic(
         "\n".join(top_spells[:10]) if top_spells else "No specific spells matched this playstyle."
     )
 
-    casting_ability = (
-        class_info.get("spellcasting", {})
-        .get("spellcasting_ability", {})
-        .get("name")
-    )
+    casting_ability = class_info.get("spellcasting", {}).get("spellcasting_ability", {}).get("name")
 
     if playstyle == "control":
         focus = "spell save DC and area effects"
     else:
         focus = "damage output and spell slot efficiency"
 
-    priority = (
-        "Intelligence" if casting_ability == "INT"
-        else "your primary casting stat"
-    )
+    priority = "Intelligence" if casting_ability == "INT" else "your primary casting stat"
 
     return (
         f"## Build Recommendation: {class_name.title()} "

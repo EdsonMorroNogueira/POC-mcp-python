@@ -2,6 +2,7 @@ import sys
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from typing import Literal
 
 from mcp.server.fastmcp import FastMCP
 
@@ -40,5 +41,7 @@ import nerd_toolkit.mtg.tools  # noqa: F401, E402
 
 def main() -> None:
     """Entry point — run the MCP server with configurable transport."""
-    transport = sys.argv[1] if len(sys.argv) > 1 else "stdio"
+    transport: Literal["stdio", "sse", "streamable-http"] = "stdio"
+    if len(sys.argv) > 1 and sys.argv[1] in ("stdio", "sse", "streamable-http"):
+        transport = sys.argv[1]  # type: ignore[assignment]
     mcp.run(transport=transport)

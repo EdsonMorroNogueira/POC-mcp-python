@@ -29,14 +29,16 @@ class DndClient(BaseClient):
         """List all available D&D classes."""
         logger.info("Listing D&D classes")
         data = await self._cached_get("classes", "/classes")
-        return data.get("results", [])
+        result: list[dict[str, Any]] = data.get("results", [])
+        return result
 
     async def get_class_info(self, class_name: str) -> dict[str, Any]:
         """Get detailed info about a specific class."""
         index = class_name.lower()
         logger.info("Fetching class info: %s", index)
         response = await self._request_with_retry("GET", f"/classes/{index}")
-        return response.json()
+        result: dict[str, Any] = response.json()
+        return result
 
     async def get_spells_by_class(self, class_name: str) -> list[dict[str, Any]]:
         """Get all spells available to a class."""
@@ -44,13 +46,15 @@ class DndClient(BaseClient):
         cache_key = f"spells_by_class_{index}"
         logger.info("Fetching spells for class: %s", index)
         data = await self._cached_get(cache_key, f"/classes/{index}/spells")
-        return data.get("results", [])
+        result: list[dict[str, Any]] = data.get("results", [])
+        return result
 
     async def get_spell_detail(self, spell_index: str) -> dict[str, Any]:
         """Get detailed info about a specific spell."""
         logger.info("Fetching spell detail: %s", spell_index)
         response = await self._request_with_retry("GET", f"/spells/{spell_index}")
-        return response.json()
+        result: dict[str, Any] = response.json()
+        return result
 
     async def search_monsters(
         self,
@@ -63,11 +67,13 @@ class DndClient(BaseClient):
 
         logger.info("Searching monsters with params: %s", params)
         response = await self._request_with_retry("GET", "/monsters", params=params)
-        data = response.json()
-        return data.get("results", [])
+        data: dict[str, Any] = response.json()
+        result: list[dict[str, Any]] = data.get("results", [])
+        return result
 
     async def get_monster_detail(self, monster_index: str) -> dict[str, Any]:
         """Get detailed info about a specific monster."""
         logger.info("Fetching monster detail: %s", monster_index)
         response = await self._request_with_retry("GET", f"/monsters/{monster_index}")
-        return response.json()
+        result: dict[str, Any] = response.json()
+        return result

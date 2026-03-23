@@ -59,12 +59,16 @@ async def test_search_spells_logic_by_class_and_level() -> None:
                 "count": 2,
                 "results": [
                     {
-                        "index": "fireball", "name": "Fireball",
-                        "level": 3, "url": "/api/spells/fireball",
+                        "index": "fireball",
+                        "name": "Fireball",
+                        "level": 3,
+                        "url": "/api/spells/fireball",
                     },
                     {
-                        "index": "shield", "name": "Shield",
-                        "level": 1, "url": "/api/spells/shield",
+                        "index": "shield",
+                        "name": "Shield",
+                        "level": 1,
+                        "url": "/api/spells/shield",
                     },
                 ],
             },
@@ -120,8 +124,10 @@ async def test_generate_encounter_logic() -> None:
         return_value=httpx.Response(
             200,
             json={
-                "name": "Goblin", "challenge_rating": 0.25,
-                "hit_points": 7, "type": "humanoid",
+                "name": "Goblin",
+                "challenge_rating": 0.25,
+                "hit_points": 7,
+                "type": "humanoid",
             },
         ),
     )
@@ -129,15 +135,20 @@ async def test_generate_encounter_logic() -> None:
         return_value=httpx.Response(
             200,
             json={
-                "name": "Wolf", "challenge_rating": 0.25,
-                "hit_points": 11, "type": "beast",
+                "name": "Wolf",
+                "challenge_rating": 0.25,
+                "hit_points": 11,
+                "type": "beast",
             },
         ),
     )
 
     async with DndClient() as client:
         result = await generate_encounter_logic(
-            client, party_level=1, party_size=4, difficulty="easy",
+            client,
+            party_level=1,
+            party_size=4,
+            difficulty="easy",
         )
 
     assert "Encounter" in result or "encounter" in result
@@ -153,12 +164,16 @@ async def test_recommend_spells_logic() -> None:
                 "count": 2,
                 "results": [
                     {
-                        "index": "fireball", "name": "Fireball",
-                        "level": 3, "url": "/api/spells/fireball",
+                        "index": "fireball",
+                        "name": "Fireball",
+                        "level": 3,
+                        "url": "/api/spells/fireball",
                     },
                     {
-                        "index": "cure-wounds", "name": "Cure Wounds",
-                        "level": 1, "url": "/api/spells/cure-wounds",
+                        "index": "cure-wounds",
+                        "name": "Cure Wounds",
+                        "level": 1,
+                        "url": "/api/spells/cure-wounds",
                     },
                 ],
             },
@@ -200,7 +215,10 @@ async def test_recommend_spells_logic() -> None:
 
     async with DndClient() as client:
         result = await recommend_spells_logic(
-            client, class_name="wizard", level=5, spell_type="attack",
+            client,
+            class_name="wizard",
+            level=5,
+            spell_type="attack",
         )
 
     assert "Fireball" in result
@@ -228,8 +246,10 @@ async def test_recommend_build_logic() -> None:
                 "count": 1,
                 "results": [
                     {
-                        "index": "fireball", "name": "Fireball",
-                        "level": 3, "url": "/api/spells/fireball",
+                        "index": "fireball",
+                        "name": "Fireball",
+                        "level": 3,
+                        "url": "/api/spells/fireball",
                     },
                 ],
             },
@@ -255,7 +275,10 @@ async def test_recommend_build_logic() -> None:
 
     async with DndClient() as client:
         result = await recommend_build_logic(
-            client, class_name="wizard", level=5, playstyle="control",
+            client,
+            class_name="wizard",
+            level=5,
+            playstyle="control",
         )
 
     assert "Wizard" in result
