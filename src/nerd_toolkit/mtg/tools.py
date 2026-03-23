@@ -29,10 +29,11 @@ async def search_cards_logic(
     color: str | None = None,
     card_type: str | None = None,
     mtg_format: str | None = None,
+    keyword: str | None = None,
 ) -> str:
     """Core logic for search_cards, testable without MCP context."""
     cards = await client.search_cards(
-        query, color=color, card_type=card_type, mtg_format=mtg_format
+        query, color=color, card_type=card_type, mtg_format=mtg_format, keyword=keyword
     )
     if not cards:
         return f"No cards found for query: {query}"
@@ -55,6 +56,7 @@ async def build_deck_logic(
     colors: str,
     strategy: str,
     mtg_format: str,
+    keyword: str | None = None,
 ) -> str:
     """Core logic for build_deck, testable without MCP context."""
     deck_size = 100 if mtg_format.lower() == "commander" else 60
@@ -63,6 +65,7 @@ async def build_deck_logic(
         query=strategy,
         color=colors,
         mtg_format=mtg_format,
+        keyword=keyword,
     )
 
     if not cards:
@@ -85,20 +88,30 @@ async def search_cards(
     color: str | None = None,
     card_type: str | None = None,
     mtg_format: str | None = None,
+    keyword: str | None = None,
     ctx: Context[ServerSession, AppContext] | None = None,
 ) -> str:
     """Search for Magic: The Gathering cards by name, color, type, or format.
 
+    Args:
+        query: Search text (card name, type, or Scryfall syntax)
+        color: Color filter (e.g., "red", "blue", "mardu", "rwb")
+        card_type: Type filter (e.g., "creature", "instant", "legendary")
+        mtg_format: Format filter (e.g., "standard", "modern", "commander")
+        keyword: Extra Scryfall search syntax appended to the query. Useful for
+            thematic filters like 'lore:vampire', name patterns, or OR queries.
+            Examples: 'o:"each opponent"', 'name:/queen|lady|princess/'
+
     Examples:
     - search_cards("lightning bolt") — find cards by name
-    - search_cards("", color="red", card_type="creature", mtg_format="standard")
+    - search_cards("t:vampire t:legendary", keyword="name:/queen|lady|matriarch/")
     """
     if ctx:
         await ctx.info(f"Searching MTG cards: {query}")
         client = ctx.request_context.lifespan_context.scryfall
     else:
         raise RuntimeError("MCP context required")
-    return await search_cards_logic(client, query, color, card_type, mtg_format)
+    return await search_cards_logic(client, query, color, card_type, mtg_format, keyword)
 
 
 @mcp.tool()
@@ -125,6 +138,7 @@ async def build_deck(
     colors: str,
     strategy: str,
     mtg_format: str,
+    keyword: str | None = None,
     ctx: Context[ServerSession, AppContext] | None = None,
 ) -> str:
     """Build a Magic: The Gathering deck based on colors, strategy, and format.
@@ -133,10 +147,11 @@ async def build_deck(
         colors: Color identity (e.g., "red", "blue,black", "green,white")
         strategy: Deck strategy (e.g., "aggro", "control", "combo", "midrange", "burn")
         mtg_format: Game format (e.g., "standard", "modern", "commander", "pioneer")
+        keyword: Extra Scryfall syntax for thematic filters (e.g., 'o:"each opponent"')
     """
     if ctx:
         await ctx.info(f"Building {colors} {strategy} deck for {mtg_format}")
         client = ctx.request_context.lifespan_context.scryfall
     else:
         raise RuntimeError("MCP context required")
-    return await build_deck_logic(client, colors, strategy, mtg_format)
+    return await build_deck_logic(client, colors, strategy, mtg_format, keyword)

@@ -39,6 +39,7 @@ class ScryfallClient(BaseClient):
         color: str | None = None,
         card_type: str | None = None,
         mtg_format: str | None = None,
+        keyword: str | None = None,
     ) -> str:
         """Build a Scryfall search query string with optional filters."""
         parts = [query]
@@ -48,6 +49,8 @@ class ScryfallClient(BaseClient):
             parts.append(f"t:{card_type}")
         if mtg_format:
             parts.append(f"f:{mtg_format}")
+        if keyword:
+            parts.append(f"({keyword})")
         return " ".join(parts)
 
     async def search_cards(
@@ -56,10 +59,11 @@ class ScryfallClient(BaseClient):
         color: str | None = None,
         card_type: str | None = None,
         mtg_format: str | None = None,
+        keyword: str | None = None,
         page: int = 1,
     ) -> list[dict[str, Any]]:
         """Search for cards using Scryfall search syntax."""
-        full_query = self._build_query(query, color, card_type, mtg_format)
+        full_query = self._build_query(query, color, card_type, mtg_format, keyword)
         logger.info("Searching Scryfall: %s", full_query)
 
         response = await self._rate_limited_request(
