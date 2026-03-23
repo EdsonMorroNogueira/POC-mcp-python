@@ -22,6 +22,7 @@ class BaseClient:
             base_url=self._base_url,
             headers=self._headers,
             timeout=httpx.Timeout(settings.request_timeout),
+            follow_redirects=True,
         )
         return self
 
